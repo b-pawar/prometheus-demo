@@ -1,0 +1,55 @@
+# Generates docker image for dev branch
+
+name: TEST-CI-MAIN
+
+# Controls when the workflow will run
+on:  
+  push:
+  pull_request:
+    branches:
+      - main
+      
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Runs a single command using the runners shell
+      - name: echo A
+        run: echo Step 1 Checkout main
+        
+      - uses: actions/checkout@v2
+        with:
+          ref: main
+
+      # Runs a single command using the runners shell
+      - name: echo B
+        run: echo Step 2 Checkout complete, now login into docker hub!
+
+      - name: Login to DockerHub Registry
+        run: echo User@2022# | docker login -u 9960222524 --password-stdin
+
+      # Runs a single command using the runners shell
+      - name: echo D
+        run: echo Build the tagged image now
+
+      - name: Build the tagged Docker image
+        run: docker build . --file Dockerfile --tag 9960222524/prometheus-demo:latest
+
+      # Runs a single command using the runners shell
+      - name: echo E
+        run: echo Will push the image after tagging
+
+      - name: Push the tagged Docker image
+        run: docker push 9960222524/prometheus-demo:latest
+          
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Completed the Docker push!
